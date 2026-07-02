@@ -1,0 +1,50 @@
+{
+  "name": "opencode-image-relay",
+  "version": "0.0.1",
+  "description": "OpenCode plugin that relays pasted images to any image-capable MCP tool, so text-only models (e.g. GLM-5.2) can still analyze images.",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "image",
+    "mcp",
+    "vision",
+    "text-only-model",
+    "glm",
+    "screenshot"
+  ],
+  "license": "MIT",
+  "author": "baocang",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baocang/opencode-image-relay.git"
+  },
+  "bugs": {
+    "url": "https://github.com/baocang/opencode-image-relay/issues"
+  },
+  "homepage": "https://github.com/baocang/opencode-image-relay#readme",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "build": "bun build src/index.ts --no-bundle --outfile dist/index.js",
+    "prepublishOnly": "bun run typecheck && bun test"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "*",
+    "@types/bun": "^1",
+    "typescript": "^5"
+  },
+  "engines": {
+    "bun": ">=1"
+  }
+}

@@ -1,0 +1,37 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# logs
+*.log
+logs/
+
+# test / coverage
+coverage/
+.nyc_output/
+
+# os
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# env
+.env
+.env.*
+!.env.example
+
+# misc
+*.tgz
+.cache/
+
+# npm auth (never commit)
+.npmrc
