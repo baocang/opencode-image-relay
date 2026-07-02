@@ -142,15 +142,14 @@ const imageRelay: Plugin = async () => {
           }
         }
 
-        // Inject the saved path(s) plus a one-line steer: use an image-analysis
-        // tool, NOT the built-in `read` (which fails on images for text models).
-        // No system prompt — the attachment error is already prevented by
-        // stripping the image part above.
-        const steer = "请用可用的图像分析工具（MCP）读取该路径并分析；不要用 read 工具直接读图（文本模型读图会失败）。"
+        // Inject the saved path(s) plus a one-line, positive steer toward an
+        // image-analysis tool. No system prompt — the attachment error is
+        // already prevented by stripping the image part above.
+        const steer = "Analyze with an available image-analysis tool (MCP)."
         const hint =
           saved.length === 1
-            ? `${HINT_TAG} 用户附带的图片已保存：${saved[0]}\n${steer}`
-            : `${HINT_TAG} 用户附带的 ${saved.length} 张图片已保存：\n${saved.map((f) => `  ${f}`).join("\n")}\n${steer}`
+            ? `${HINT_TAG} The user's pasted image was saved to: ${saved[0]}\n${steer}`
+            : `${HINT_TAG} The user's pasted ${saved.length} images were saved to:\n${saved.map((f) => `  ${f}`).join("\n")}\n${steer}`
         parts.push({ type: "text", text: hint })
       }
     },

@@ -1,6 +1,6 @@
 {
   "name": "opencode-image-relay",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OpenCode plugin that relays pasted images to any image-capable MCP tool, so text-only models (e.g. GLM-5.2) can still analyze images.",
   "type": "module",
   "main": "src/index.ts",

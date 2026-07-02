@@ -40,8 +40,8 @@ describe("image-relay", () => {
     expect(m.parts.some((p) => p.type === "file")).toBe(false) // image part stripped -> no error can be generated
     const hint = hintOf(m)
     expect(hint).toBeTruthy()
-    expect((hint!.text as string).includes("不要用 read")).toBe(true) // steers away from the read tool
-    const match = (hint!.text as string).match(/已保存：(\S+)/)
+    expect((hint!.text as string).includes("image-analysis tool")).toBe(true) // positive steer to an image-analysis tool
+    const match = (hint!.text as string).match(/saved to: (\S+)/)
     expect(match).toBeTruthy()
     expect(await exists(match![1])).toBe(true)
   })
@@ -87,7 +87,7 @@ describe("image-relay", () => {
     const { msg: m } = await run(false, msg)
     const hint = hintOf(m)
     expect(hint).toBeTruthy()
-    expect((hint!.text as string).includes("2 张")).toBe(true)
+    expect((hint!.text as string).includes("2 images")).toBe(true)
     expect(m.parts.some((p) => p.type === "file")).toBe(false) // both stripped
   })
 })
