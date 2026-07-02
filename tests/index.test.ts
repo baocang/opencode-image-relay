@@ -26,7 +26,7 @@ const hintOf = (m: { parts: Part[] }) =>
   m.parts.find((p) => p.type === "text" && p.text?.startsWith("[image-relay]"))
 
 describe("image-relay", () => {
-  it("text-only model: injects system prompt, saves file, keeps original part, strips error noise", async () => {
+  it("text-only model: saves file, strips image part + error noise, injects only the path, injects NO prompt", async () => {
     const msg = userMsg([
       { type: "text", text: "这是什么？" },
       { type: "text", text: 'Cannot read "x.png" (this model does not support image input). Inform the user.' },
@@ -34,26 +34,29 @@ describe("image-relay", () => {
     ])
     const { sysOut, msg: m } = await run(false, msg)
 
-    expect(sysOut.system.length).toBeGreaterThan(0)
+    expect(sysOut.system.length).toBe(0) // no prompt injected
     const texts = m.parts.filter((p) => p.type === "text").map((p) => p.text)
     expect(texts.some((t) => /does not support image input/i.test(t as string))).toBe(false)
-    expect(m.parts.some((p) => p.type === "file")).toBe(true)
+    expect(m.parts.some((p) => p.type === "file")).toBe(false) // image part stripped -> no error can be generated
     const hint = hintOf(m)
     expect(hint).toBeTruthy()
+    expect((hint!.text as string).includes("不要用 read")).toBe(true) // steers away from the read tool
     const match = (hint!.text as string).match(/已保存：(\S+)/)
     expect(match).toBeTruthy()
     expect(await exists(match![1])).toBe(true)
   })
 
-  it("vision-capable model: passed through untouched", async () => {
+  it("vision-capable model: passed through untouched (image part kept, no hint)", async () => {
     const msg = userMsg([
       { type: "text", text: "看图" },
       { type: "file", mime: "image/png", url: "data:image/png;base64," + PNG_1x1 },
     ])
     const before = msg.parts.length
-    const { msg: m } = await run(true, msg)
+    const { sysOut, msg: m } = await run(true, msg)
     expect(m.parts.length).toBe(before)
+    expect(m.parts.some((p) => p.type === "file")).toBe(true)
     expect(hintOf(m)).toBeUndefined()
+    expect(sysOut.system.length).toBe(0)
   })
 
   it("is idempotent: re-running transform does not duplicate hints", async () => {
@@ -85,5 +88,6 @@ describe("image-relay", () => {
     const hint = hintOf(m)
     expect(hint).toBeTruthy()
     expect((hint!.text as string).includes("2 张")).toBe(true)
+    expect(m.parts.some((p) => p.type === "file")).toBe(false) // both stripped
   })
 })

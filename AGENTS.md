@@ -18,12 +18,17 @@ tool (e.g. `zai-mcp-server`).
 - **Activation must stay capability-based** (`model.capabilities.input.image`).
   Vision-capable models are passed through untouched — the original image part
   reaches them natively.
-- **Do not strip the original inline `file` part.** It is the source of truth
-  and lets the hook re-materialize the temp file on demand from the persisted
-  base64 (the temp file is ephemeral; the conversation record is not).
-- **Keep both hooks idempotent.** Every pass must clean up previously-injected
-  `[image-relay]` hints and opencode's `does not support image input` error
-  noise, then re-inject.
+- **For text-only models, strip the image `file` part from the outgoing
+  request** after saving it. With no unsupported part left, opencode never
+  generates its "does not support image input" error, so no system-prompt
+  override is needed. The strip is transient (the persisted conversation
+  record keeps the original base64), so re-runs re-materialize the temp file.
+- **Inject only a minimal hint**: the saved path plus a one-line steer to use
+  an image-analysis MCP tool (not the built-in `read`, which fails on images
+  for text models). No system prompt, no hard-coded tool/model/provider names.
+- **Keep the messages hook idempotent.** Every pass must drop any previously
+  injected `[image-relay]` hint and leftover `does not support image input`
+  noise before re-injecting, so re-processing never accumulates stale text.
 
 ## Commands
 

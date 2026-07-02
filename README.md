@@ -21,13 +21,16 @@ user pastes image
   → experimental.chat.messages.transform hook fires
      (only when the active model lacks native image input)
   → image bytes are saved to a temp file
-  → opencode's "does not support image input" error noise is stripped
-  → a neutral hint is injected: "[image-relay] ... saved: <abs path>"
-  → the model reads the path and analyzes it with an image MCP tool
+  → the image part is REMOVED from the outgoing message, so opencode has no
+     unsupported part to flag — its "does not support image input" error is
+     never generated in the first place
+  → a minimal hint is injected: "[image-relay] ... saved: <abs path>"
+     (+ a one-line steer to use an image-analysis tool, not `read`)
+  → the model analyzes the path with an available image MCP tool
 ```
 
 - **Vision-capable models are left untouched** — the original image part reaches them natively. Activation is purely capability-based, no config needed.
-- The original inline image stays in the conversation record (it is **not** stripped), so nothing is lost. The temp file is just an ephemeral handle, regenerated from the persisted base64 whenever it's needed again.
+- No system prompt is injected. The image part is stripped only from the outgoing request; the original inline image stays in the conversation record, so nothing is lost. The temp file is an ephemeral handle, regenerated from the persisted base64 whenever it's needed again.
 
 ## Install
 
